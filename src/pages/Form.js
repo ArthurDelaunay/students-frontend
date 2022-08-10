@@ -3,14 +3,18 @@ import { useState } from "react"
 
 const Form = () => {
   // states
+  const [name, setName] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [studentName, setStudentName] = useState("")
   // methodes
+
+  const handleNameChange = (e) => {
+    setName(e.target.value)
+  }
 
   const handlerSubmitStudent = async (e) => {
     e.preventDefault()
     const student = {
-      name: e.target.firstChild.value,
+      name: name,
     }
     const request = await fetch("http://localhost:5000/students", {
       method: "POST",
@@ -21,20 +25,19 @@ const Form = () => {
     })
     const status = request.status
     if (status === 200) {
-      setStudentName(student.name)
       setIsSubmitted(true)
     } else if (status === 409) {
       alert("This Student already exist")
-      e.target.firstChild.value = ""
+      setName("")
     }
   }
 
   return (
     <main>
       <h1>Add a student to the List</h1>
-      {isSubmitted && <Navigate to={`/success/${studentName}`} />}
+      {isSubmitted && <Navigate to={`/success/${name}`} />}
       <form action="" onSubmit={handlerSubmitStudent}>
-        <input type="text" />
+        <input type="text" value={name} onChange={handleNameChange} />
         <button type="submit">Add</button>
       </form>
     </main>
